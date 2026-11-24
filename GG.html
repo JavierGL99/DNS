@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cuestionario DNS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#EDF1F4;--surface:#FFFFFF;--ink:#16202E;--muted:#5B6878;--line:#CBD5DF;--accent:#0A6C74;--accent-ink:#FFFFFF;--ok:#1B7A3E;--okbg:#E3F4E8;--bad:#B3261E;--badbg:#FBE7E5;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1620;--surface:#172131;--ink:#E7EDF4;--muted:#9AA8B8;--line:#2B3A4E;--accent:#5CC8D0;--accent-ink:#0F1620;--ok:#6FD28F;--okbg:#12301E;--bad:#FF8A80;--badbg:#3A1A18;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1620;--surface:#172131;--ink:#E7EDF4;--muted:#9AA8B8;--line:#2B3A4E;--accent:#5CC8D0;--accent-ink:#0F1620;--ok:#6FD28F;--okbg:#12301E;--bad:#FF8A80;--badbg:#3A1A18;color-scheme:dark}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 90px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--surface);z-index:10}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);padding:.7rem 1rem}
+.top-in{max-width:760px;margin:0 auto;display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.top h1{font:800 1.25rem/1.2 "Bricolage Grotesque",system-ui,sans-serif;margin:0}
+.stats{font-size:.9rem;color:var(--muted);display:flex;gap:1rem}
+.stats b{color:var(--ink)}
+.bar{max-width:760px;margin:.55rem auto 0;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+main{max-width:760px;margin:0 auto;padding:1.5rem 1rem 3rem}
+.part{font:800 1.6rem/1.15 "Bricolage Grotesque",system-ui,sans-serif;margin:1.8rem 0 .3rem}
+.lead{color:var(--muted);margin:0 0 1.2rem}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.1rem 1rem;margin:0 0 1rem}
+.q h3{font-weight:600;font-size:1.05rem;line-height:1.4;margin:0 0 .8rem;display:flex;gap:.7rem}
+.n{flex:none;min-width:2rem;height:2rem;border-radius:50%;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;font-size:.85rem;font-weight:600}
+.opts{display:grid;gap:.5rem}
+.opt{font:inherit;color:inherit;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:8px;padding:.6rem .8rem;display:flex;gap:.7rem;align-items:flex-start;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:focus-visible,.btn:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.opt b{flex:none;width:1.4rem;color:var(--muted)}
+.opt:disabled{cursor:default}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}
+.opt.bad{background:var(--badbg);border-color:var(--bad)}
+.opt.reveal{border-color:var(--ok);border-style:dashed}
+.fb{margin:.8rem 0 0;font-size:.92rem;padding:.55rem .75rem;border-radius:8px}
+.fb.ok{background:var(--okbg);color:var(--ok)}
+.fb.bad{background:var(--badbg);color:var(--bad)}
+.fb[hidden]{display:none}
+.sentence{line-height:2.4}
+input.blank{font:inherit;color:var(--ink);background:var(--bg);border:0;border-bottom:2px solid var(--ink);border-radius:4px 4px 0 0;padding:.1rem .45rem;width:11rem;max-width:100%;text-align:center}
+input.blank.ok{border-color:var(--ok);background:var(--okbg)}
+input.blank.bad{border-color:var(--bad);background:var(--badbg)}
+.btn{font:600 .95rem "IBM Plex Sans",system-ui,sans-serif;background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:.55rem 1.1rem;cursor:pointer;margin-top:.7rem}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.alt{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.result{background:var(--surface);border:2px solid var(--accent);border-radius:12px;padding:1.5rem;text-align:center;margin-top:2rem}
+.result[hidden]{display:none}
+.result .big{font:800 3rem/1 "Bricolage Grotesque",system-ui,sans-serif;margin:0 0 .4rem}
+.result p{margin:.2rem 0}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+@media (max-width:480px){.sentence{line-height:2.8}input.blank{width:100%;margin:.2rem 0}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <h1>Cuestionario DNS</h1>
+    <div class="stats"><span>Respondidas <b id="sAns">0</b>/28</span><span>Aciertos <b id="sOk">0</b></span></div>
+  </div>
+  <div class="bar" aria-hidden="true"><i id="prog"></i></div>
+</header>
+<main>
+  <h2 class="part">Parte 1. Preguntas tipo test</h2>
+  <p class="lead">Elige una respuesta. Verás al instante si es correcta y por qué.</p>
+  <section id="test"></section>
+
+  <h2 class="part">Parte 2. Completar frases</h2>
+  <p class="lead">Escribe la palabra o expresión que falta y pulsa «Comprobar». No importan las mayúsculas ni los acentos.</p>
+  <section id="fill"></section>
+
+  <section class="result" id="result" hidden aria-live="polite">
+    <p class="big" id="rScore"></p>
+    <p id="rMsg"></p>
+    <button class="btn" id="again" type="button">Volver a empezar</button>
+  </section>
+</main>
+
+<script>
+const T=[
+["¿Cuál es la función principal del servicio DNS?",["Asignar automáticamente direcciones IP a los equipos.","Traducir nombres de dominio en direcciones IP y viceversa.","Cifrar las conexiones de Internet.","Controlar el acceso a las carpetas compartidas."],1,"DNS traduce nombres en IP y viceversa."],
+["¿Qué significa DNS?",["Domain Network Service.","Digital Name System.","Domain Name System.","Data Name Server."],2,"Domain Name System."],
+["¿Cómo está organizada la estructura de nombres DNS?",["En una estructura plana.","En una estructura jerárquica en forma de árbol invertido.","En una estructura circular.","En una única base de datos centralizada."],1,"Tiene estructura jerárquica de árbol invertido."],
+["¿Qué es un FQDN?",["El nombre corto de un ordenador.","Una dirección IP pública.","El nombre completo o absoluto de un host, desde su nombre hasta la raíz del dominio.","El nombre de un servidor DHCP."],2,"FQDN es el nombre completo de un host hasta la raíz."],
+["¿Qué organismo administra el dominio raíz y mantiene el registro de los dominios de nivel superior (TLD)?",["Microsoft.","Google.","ICANN.","OpenDNS."],2,"ICANN administra el dominio raíz."],
+["¿Cuáles son los tres tipos de dominios de nivel superior (TLD) que aparecen en los apuntes?",["Primarios, secundarios y auxiliares.","Geográficos (ccTLD), genéricos (gTLD) y .arpa.","Públicos, privados y locales.","Directos, inversos y mixtos."],1,"Geográficos, genéricos y .arpa."],
+["¿En qué consiste la delegación de un dominio?",["En eliminar un dominio de Internet.","En ceder la administración de uno o varios subdominios a otras organizaciones.","En cambiar el nombre de un equipo.","En asignar una dirección IP automáticamente."],1,"Se cede la administración de subdominios."],
+["¿Cuántos servidores raíz DNS existen según los apuntes?",["5.","8.","13.","20."],2,"Existen 13 servidores raíz identificados."],
+["¿Qué diferencia hay entre un servidor DNS primario y uno secundario?",["El primario contiene la versión de lectura y escritura de la zona; el secundario contiene una copia de solo lectura.","El secundario puede modificar la zona y el primario no.","Ambos son exactamente iguales.","El primario solo resuelve direcciones externas."],0,"Primario: lectura/escritura. Secundario: solo lectura."],
+["¿Para qué sirve un servidor reenviador (forwarder)?",["Para borrar la caché DNS.","Para redirigir consultas DNS externas a otros servidores DNS.","Para crear registros PTR.","Para asignar direcciones IP."],1,"Reenvía consultas externas a otros servidores."],
+["¿Qué diferencia hay entre resolución directa e inversa?",["La directa obtiene una MAC y la inversa una IP.","La directa obtiene una IP a partir de un nombre y la inversa obtiene el nombre a partir de una IP.","Ambas realizan exactamente la misma operación.","La directa resuelve correos y la inversa páginas web."],1,"Directa: nombre a IP. Inversa: IP a nombre."],
+["¿Qué puerto utiliza DNS para recibir consultas según los apuntes?",["21.","25.","53.","80."],2,"DNS utiliza el puerto 53."],
+["¿Qué diferencia existe entre una consulta recursiva y una iterativa?",["La recursiva pide una respuesta completa al servidor; la iterativa solicita la mejor respuesta que pueda proporcionar sin ayuda de otros servidores.","La recursiva solamente funciona en IPv6.","La iterativa siempre devuelve la dirección IP final.","No existe ninguna diferencia."],0,"Recursiva: respuesta completa. Iterativa: mejor respuesta disponible."],
+["¿Qué significa TTL?",["Transfer Time Location.","Time To Live.","Total Time Link.","Technical Transfer Level."],1,"Time To Live."],
+["¿Qué función tiene la caché DNS?",["Guardar temporalmente las respuestas DNS para agilizar futuras consultas.","Eliminar todos los dominios antiguos.","Asignar direcciones IP.","Crear servidores secundarios."],0,"Guarda respuestas para acelerar futuras consultas."],
+["¿Qué registro DNS relaciona un nombre de host con una dirección IPv4?",["MX.","PTR.","A.","CNAME."],2,"A corresponde a IPv4."],
+["¿Qué registro DNS se utiliza para identificar el servidor de correo de un dominio?",["NS.","MX.","SOA.","PTR."],1,"MX identifica servidores de correo."],
+["¿Qué registro DNS se utiliza para crear un alias de otro nombre DNS?",["CNAME.","A.","MX.","PTR."],0,"CNAME permite crear alias."],
+["¿Qué diferencia hay entre una zona primaria y una secundaria?",["La primaria es de solo lectura y la secundaria de lectura y escritura.","La primaria contiene una versión de lectura y escritura y la secundaria una copia de solo lectura.","Ambas son exclusivamente de lectura.","La secundaria no contiene registros DNS."],1,"Primaria modificable y secundaria de solo lectura."],
+["¿Qué comandos permiten visualizar y borrar la caché DNS de Windows, respectivamente?",["ipconfig /flushdns y ipconfig /displaydns.","nslookup y ping.","ipconfig /displaydns y ipconfig /flushdns.","ipconfig /clear y ipconfig /delete."],2,"Primero muestra la caché y el segundo la vacía."]
+];
+const F=[
+["El servicio DNS convierte los nombres de dominio en direcciones {} y también puede realizar el proceso inverso.",["IP"]],
+["La estructura de nombres DNS tiene forma de árbol {} y comienza en una raíz sin nombre.",["Invertido"]],
+["El nombre completo o absoluto de un host se denomina {}.",["FQDN"]],
+["La organización encargada de administrar el dominio raíz es {}.",["ICANN"]],
+["El servidor DNS {} contiene la versión de lectura y escritura del archivo de zona, mientras que el {} contiene una copia de solo lectura.",["Primario","Secundario"]],
+["El registro {} se utiliza para relacionar un nombre con una dirección IPv4, mientras que el registro {} se utiliza para la resolución inversa.",["A","PTR"]],
+["El tiempo durante el cual una respuesta DNS permanece almacenada en caché se denomina {} (Time To Live).",["TTL"]],
+["Para visualizar la caché DNS utilizamos el comando {} y para vaciarla utilizamos {}.",["ipconfig /displaydns","ipconfig /flushdns"]]
+];
+const $=id=>document.getElementById(id);
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[.\s]+$/g,"").replace(/\s+/g," ").trim();
+let answered=0,correct=0;
+
+function update(){
+  $("sAns").textContent=answered;$("sOk").textContent=correct;
+  $("prog").style.width=(answered/28*100)+"%";
+  if(answered===28){
+    const pct=Math.round(correct/28*100);
+    $("rScore").textContent=correct+" / 28";
+    $("rMsg").textContent=pct>=90?"Excelente. Dominas el DNS.":pct>=70?"Muy bien. Repasa los fallos y lo tendrás.":pct>=50?"Vas por buen camino. Repasa los apuntes y vuelve a intentarlo.":"Toca repasar los apuntes. Puedes volver a empezar cuando quieras.";
+    $("result").hidden=false;
+    $("result").scrollIntoView({behavior:"smooth",block:"center"});
+  }
+}
+
+function build(){
+  answered=0;correct=0;$("result").hidden=true;
+  const test=$("test"),fill=$("fill");test.innerHTML="";fill.innerHTML="";
+  T.forEach((q,i)=>{
+    const box=document.createElement("article");box.className="q";
+    box.innerHTML='<h3><span class="n">'+(i+1)+'</span><span>'+q[0]+'</span></h3><div class="opts"></div><p class="fb" hidden></p>';
+    const wrap=box.querySelector(".opts"),fb=box.querySelector(".fb");
+    q[1].forEach((t,j)=>{
+      const b=document.createElement("button");b.type="button";b.className="opt";
+      b.innerHTML="<b>"+"ABCD"[j]+")</b><span>"+t+"</span>";
+      b.onclick=()=>{
+        const btns=wrap.querySelectorAll(".opt");
+        btns.forEach(x=>x.disabled=true);
+        const good=j===q[2];
+        b.classList.add(good?"ok":"bad");
+        if(!good)btns[q[2]].classList.add("reveal");
+        fb.className="fb "+(good?"ok":"bad");
+        fb.textContent=(good?"Correcto. ":"Incorrecto. La respuesta es "+"ABCD"[q[2]]+". ")+q[3];
+        fb.hidden=false;
+        answered++;if(good)correct++;update();
+      };
+      wrap.appendChild(b);
+    });
+    test.appendChild(box);
+  });
+  F.forEach((f,k)=>{
+    const num=21+k,box=document.createElement("article");box.className="q";
+    const parts=f[0].split("{}");let html="";
+    parts.forEach((p,i)=>{html+=p;if(i<f[1].length)html+='<input class="blank" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco '+(i+1)+' de la frase '+num+'">';});
+    box.innerHTML='<h3><span class="n">'+num+'</span><span class="sentence">'+html+'</span></h3><button class="btn" type="button">Comprobar</button><p class="fb" hidden></p>';
+    const inputs=[...box.querySelectorAll("input")],btn=box.querySelector(".btn"),fb=box.querySelector(".fb");
+    const check=()=>{
+      if(btn.disabled)return;
+      if(inputs.some(x=>!x.value.trim())){fb.className="fb bad";fb.textContent="Rellena todos los huecos antes de comprobar.";fb.hidden=false;return;}
+      let all=true;
+      inputs.forEach((x,i)=>{const ok=norm(x.value)===norm(f[1][i]);x.classList.add(ok?"ok":"bad");if(!ok)all=false;x.disabled=true;});
+      btn.disabled=true;
+      fb.className="fb "+(all?"ok":"bad");
+      fb.textContent=all?"Correcto.":"Incorrecto. Respuesta correcta: "+f[1].join(" / ")+".";
+      fb.hidden=false;
+      answered++;if(all)correct++;update();
+    };
+    btn.onclick=check;
+    inputs.forEach(x=>x.addEventListener("keydown",e=>{if(e.key==="Enter")check();}));
+    fill.appendChild(box);
+  });
+  update();
+}
+$("again").onclick=()=>{build();window.scrollTo({top:0,behavior:"smooth"});};
+build();
+</script>
+</body>
+</html>
